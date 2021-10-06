@@ -13,6 +13,8 @@
 
     This command delete all files with modified time older than 2 days and with ".txt" from the current directory.
 
+    <file_extension> is optional
+
 ## Note
 
     Wildcard characters are not supported ( example * )
