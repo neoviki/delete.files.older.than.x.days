@@ -129,7 +129,7 @@ function delete_old_files()
     echo
 }
 
-
+./banner.sh
 get_current_dir
 command_exec_dir_check
 arg_check
