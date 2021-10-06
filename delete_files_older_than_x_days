@@ -118,7 +118,9 @@ function delete_old_files()
     fi
     echo
     echo
-    
+   
+    echo "[ LOCATION ] [ $CURRENT_DIR ]"
+
     if [ -z $FILE_EXTENSION ]; then
         find . -type f -mtime $DAYS_OLD -delete    
     else
