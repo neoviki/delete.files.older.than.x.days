@@ -1,0 +1,136 @@
+#!/bin/bash
+# Version 1.4
+# Delete Backups
+#
+#		Author	: Viki (a) Vignesh Natarajan 
+#		Contact	: vikiworks.io
+#		Licence : MIT
+
+
+ARG0=$0
+ARG1=$1
+FILE_EXTENSION=$2
+
+function get_current_dir()
+{
+    CURRENT_DIR=`pwd -P`
+}
+
+function command_exec_dir_check()
+{
+	if [ ! -f delete_files_older_than_x_days ]; then
+        echo
+        echo
+		echo "  error: command should be copied to current directory before execution"
+        echo
+        echo
+        echo "  Help:"
+        echo  
+        echo
+        echo "      cp $ARG0 $CURRENT_DIR"
+        echo
+        echo
+        echo
+		exit 1
+	fi
+}
+
+function usage()
+{
+        echo "  usage: "
+        echo
+        echo "          $ARG0 <number: representing days ( 1 to 31 ) > <file extension>"
+        echo
+        echo "  example:"
+        echo
+        echo "          $ARG0 2 '.txt'"
+        echo 
+        echo "  This command deletes backup older than 2 days with .txt extension" 
+        echo 
+        echo " <file extension> is optional" 
+        echo 
+}
+
+function arg_check()
+{
+    if [ -z "$ARG1" ]; then 
+        usage
+        exit 1
+    fi
+
+    if [ "$ARG1" -gt 31 ]; then
+        echo
+        echo
+        echo "  error: invalid argument"
+        echo
+        echo
+        usage
+        exit 1
+    fi
+
+    N_DAYS="$ARG1"
+
+    if [ ! -z "$FILE_EXTENSION" ]; then
+        FIRST_CHAR=${FILE_EXTENSION:0:1}
+        echo $FIRST_CHAR
+        if [ "$FIRST_CHAR" != "." ]; then
+            echo "  error: invalid file extension"
+            echo
+            usage
+            echo
+            exit 1
+        fi
+    fi
+
+}
+
+function delete_old_files()
+{
+
+    if [ -z $N_DAYS ]; then
+        return
+    fi
+
+    DAYS_OLD="+${N_DAYS}"
+    
+    FCOUNT=0
+    
+    if [ -z $FILE_EXTENSION ]; then
+        FCOUNT=`find . -type f -mtime $DAYS_OLD | wc -l`
+    else
+        FCOUNT=`find . -type f -name "*${FILE_EXTENSION}" -mtime $DAYS_OLD | wc -l`
+    fi
+
+    if [ $FCOUNT -le 0 ]; then
+        if [ -z $FILE_EXTENSION ]; then
+            echo "  info: no files older than ( $DAYS_OLD days ) found"
+        else
+            echo "  info: no files with extension ( $FILE_EXTENSION ) older than ( $DAYS_OLD days ) found"
+        fi
+        exit 0 
+    fi
+
+
+    if [ -z $FILE_EXTENSION ]; then
+        echo "Deleting files older than ( $DAYS_OLD days )"
+    else
+        echo "Deleting files with extension ( $FILE_EXTENSION ) older than ( $DAYS_OLD days )"
+    fi
+    echo
+    echo
+    
+    if [ -z $FILE_EXTENSION ]; then
+        find . -type f -mtime $DAYS_OLD -delete    
+    else
+        find . -type f -name "*${FILE_EXTENSION}" -mtime $DAYS_OLD -delete    
+    fi
+
+    echo
+    echo
+}
+
+
+get_current_dir
+command_exec_dir_check
+arg_check
+delete_old_files
